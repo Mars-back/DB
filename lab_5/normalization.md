@@ -123,3 +123,10 @@ ALTER TABLE service
 
 -- Очищення бази від старого ненормалізованого типу
 DROP TYPE IF EXISTS service_category;
+```
+
+## 5. ER-діаграма
+
+Нижче наведено діаграму, яка відображає нормалізовану структуру бази даних з усіма атрибутами та зв'язками.
+<img width="1162" height="624" alt="lakmus" src="https://github.com/user-attachments/assets/bccee08c-14ec-4f26-8eee-46fa056cd6b8" />
+
