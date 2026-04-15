@@ -1,0 +1,66 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library" // Це змусить її використовувати стандартний стабільний двигун
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Повертаємо це сюди
+}
+
+// ... далі твої моделі без змін ...
+
+// ПЕРЕЛІКИ
+enum patient_gender {
+  MALE   @map("чоловік")
+  FEMALE @map("жінка")
+}
+
+enum staff_type {
+  SPECIALIST @map("спеціаліст")
+  ASSISTANT  @map("асистент")
+}
+
+// МОДЕЛІ
+model people {
+  people_id    Int      @id @default(autoincrement())
+  first_name   String   @db.VarChar(25)
+  last_name    String   @db.VarChar(32)
+  birth_date   DateTime @db.Date
+  
+  // КРОК 3: ПЕРЕЙМЕНОВУЄМО ТА ЗМІНЮЄМО ТИП (було phone_number)
+  contact_info String   @db.VarChar(50) 
+  
+  email        String   @unique @db.VarChar(64)
+  address      String?  @db.VarChar(255)
+  
+  // КРОК 3: ДОДАЄМО ТАЙМСТЕМП ОНОВЛЕННЯ
+  updated_at   DateTime @updatedAt 
+
+  patient      patient?
+  doctor       doctor?
+}
+
+model patient {
+  patient_id     Int              @id @default(autoincrement())
+  gender         patient_gender
+  people_id      Int              @unique
+  people         people           @relation(fields: [people_id], references: [people_id])
+  medical_review medical_review[] 
+}
+
+model doctor {
+  doctor_id  Int        @id @default(autoincrement())
+  staff_type staff_type @default(SPECIALIST)
+  people_id  Int        @unique
+  people     people     @relation(fields: [people_id], references: [people_id])
+}
+
+model medical_review {
+  review_id  Int      @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+  patient_id Int
+  patient    patient  @relation(fields: [patient_id], references: [patient_id])
+}
